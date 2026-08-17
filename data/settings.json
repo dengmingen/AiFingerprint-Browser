@@ -1,0 +1,9 @@
+{
+  "api_key_enabled": false,
+  "api_key": "f8d499d41e4453b69fe9b224f3063cfe",
+  "sync_server_enabled": false,
+  "sync_token": "ed4e746b169f69d34a84911fb63fa0bf",
+  "sync_remote_url": "http://127.0.0.1:18081",
+  "sync_remote_token": "cd22387acbbb851fccab12e44bf39cbe",
+  "auto_sync": false
+}
