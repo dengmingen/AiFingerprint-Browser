@@ -1,0 +1,6 @@
+INFO:     Started server process [9188]
+INFO:     Waiting for application startup.
+2026-08-16 23:22:58,622 INFO fpworkbench: 指纹浏览器工作台 v0.4.0 (Phase 4) 已启动
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:18080 (Press CTRL+C to quit)
+2026-08-16 23:23:03,325 INFO httpx: HTTP Request: GET https://raw.githubusercontent.com/daijro/camoufox/main/README.md "HTTP/1.1 200 OK"
