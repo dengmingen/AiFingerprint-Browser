@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>指纹浏览器工作台</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app-layout">
+
+  <!-- ============================ 侧边栏 ============================ -->
+  <aside class="sidenav">
+    <div class="brand">
+      <div class="brand-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <div>
+        <h1>指纹浏览器工作台</h1>
+        <span class="ver" id="ver"></span>
+      </div>
+    </div>
+
+    <nav class="tabs">
+      <button class="active" data-tab="env">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        环境管理
+      </button>
+      <button data-tab="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5l6 3.5-6 3.5v-7z"/></svg>
+        RPA 任务
+      </button>
+      <button data-tab="schedules">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.5 2"/></svg>
+        调度计划
+      </button>
+      <button data-tab="matrix">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 3.5v5.4c0 5-3.4 9.3-8 11.1-4.6-1.8-8-6.1-8-11.1V5.5L12 2z"/><path d="M9 12l2 2 4-4"/></svg>
+        矩阵风控
+      </button>
+      <button data-tab="logs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+        审计日志
+      </button>
+      <button data-tab="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.1-1.55 1.7 1.7 0 0 0-1.88.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1.1 1.7 1.7 0 0 0-.34-1.88l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34h.01a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55h.01a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.88v.01a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.55 1z"/></svg>
+        系统设置
+      </button>
+      <span class="spacer"></span>
+      <span id="identityBadge"></span>
+    </nav>
+
+    <div class="sidenav-footer">
+      <div class="kernel-badges" id="kernelBadges"></div>
+    </div>
+  </aside>
+
+  <!-- ============================ 主区域 ============================ -->
+  <main>
+    <!-- 环境管理 -->
+    <section class="tab-panel active" id="tab-env">
+      <div class="page-head">
+        <h2>环境管理</h2>
+        <div class="sub">每个环境 = 一台独立的"真实设备"：固定指纹、独立存储、独立代理</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="btnNew">＋ 新建环境</button>
+        <button class="btn" id="btnBatchNew">⧉ 批量新建</button>
+        <button class="btn" id="btnImport">⬇ 导入环境</button>
+        <button class="btn" id="btnRefresh">刷新</button>
+        <button class="btn" id="btnProxyTest">🌐 代理测试</button>
+        <button class="btn" id="btnDetect">🔍 环境自检链接</button>
+        <a class="btn ghost" href="/docs" target="_blank">API 文档</a>
+        <span class="spacer"></span>
+        <span class="muted" id="runningCount">0 个环境运行中</span>
+      </div>
+
+      <div class="batch-bar" id="batchBar">
+        <b id="batchCount">已选 0 项</b>
+        <button class="btn small primary" id="btnBatchStart">批量启动</button>
+        <button class="btn small" id="btnBatchStop">批量停止</button>
+        <button class="btn small" id="btnBatchExport">导出选中</button>
+        <button class="btn small danger" id="btnBatchDelete">批量删除</button>
+        <button class="btn small ghost" id="btnBatchClear">取消选择</button>
+      </div>
+
+      <div class="tips">
+        camoufox = Firefox 定制内核（C++ 层指纹伪装，推荐）· fp-chromium = Chromium 定制（伪装 + CDP 直连）·
+        chromium = 系统浏览器（无伪装，仅调试）。指纹模式：合成生成（无限组合）或 真实预设（真实设备库）。
+        每个环境指纹创建后固定，重启不变；「体检」可实测风控一致性。
+      </div>
+
+      <table class="list">
+        <thead><tr>
+          <th style="width:30px"><input type="checkbox" id="checkAll"></th>
+          <th>名称</th><th>分组</th><th>内核</th><th>目标 OS</th><th>代理</th>
+          <th>指纹（UA / 模式）</th><th>健康分</th><th>状态</th><th style="width:320px">操作</th>
+        </tr></thead>
+        <tbody id="profileRows">
+          <tr><td colspan="10" class="empty">加载中…</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- RPA 任务 -->
+    <section class="tab-panel" id="tab-tasks">
+      <div class="page-head">
+        <h2>RPA 任务</h2>
+        <div class="sub">在所选环境上按步骤自动执行；支持截图留痕、数据抽取、Webhook 通知与人机化节奏</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="btnNewTask">＋ 新建任务</button>
+        <button class="btn" id="btnWarmupTpl">🌱 一键创建预热任务</button>
+        <button class="btn" id="btnRefreshTasks">刷新</button>
+      </div>
+
+      <div class="section-title">任务列表</div>
+      <table class="list">
+        <thead><tr>
+          <th>任务名</th><th>步骤数</th><th>备注</th><th>更新时间</th><th style="width:230px">操作</th>
+        </tr></thead>
+        <tbody id="taskRows"><tr><td colspan="5" class="empty">暂无任务</td></tr></tbody>
+      </table>
+
+      <div class="section-title">运行记录</div>
+      <table class="list">
+        <thead><tr>
+          <th>Run ID</th><th>任务</th><th>环境</th><th>状态</th><th>开始时间</th><th style="width:170px">操作</th>
+        </tr></thead>
+        <tbody id="runRows"><tr><td colspan="6" class="empty">暂无运行记录</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- 调度计划 -->
+    <section class="tab-panel" id="tab-schedules">
+      <div class="page-head">
+        <h2>调度计划</h2>
+        <div class="sub">按每日固定时刻或固定间隔自动执行 RPA 任务（需保持服务运行）</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="btnNewSchedule">＋ 新建调度</button>
+        <button class="btn" id="btnRefreshSchedules">刷新</button>
+      </div>
+
+      <table class="list">
+        <thead><tr>
+          <th>名称</th><th>任务</th><th>类型</th><th>环境数</th><th>上次运行</th><th>下次运行</th><th>状态</th><th style="width:280px">操作</th>
+        </tr></thead>
+        <tbody id="scheduleRows"><tr><td colspan="8" class="empty">暂无调度计划</td></tr></tbody>
+      </table>
+    </section>
+
+    <!-- 矩阵风控 -->
+    <section class="tab-panel" id="tab-matrix">
+      <div class="page-head">
+        <h2>矩阵风控</h2>
+        <div class="sub">扫描指纹特征分布，检测重复与拥挤——多个环境呈现相似指纹会被平台聚类关联</div>
+      </div>
+
+      <div class="toolbar">
+        <button class="btn primary" id="btnRefreshMatrix">重新扫描</button>
+        <button class="btn danger" id="btnRegenRisky" style="display:none">⚠ 重生成全部风险环境指纹</button>
+        <span class="spacer"></span>
+        <span class="muted" id="matrixSummary"></span>
+      </div>
+
+      <div class="tips">
+        高危：多个环境指纹完全相同（UA + 屏幕 + GPU 一致）→ 平台可聚类关联整个矩阵。
+        中危：同一 GPU + 屏幕组合被 ≥4 个环境共用。一键重生成会避开现有矩阵指纹组合。
+      </div>
+
+      <div class="section-title">特征分布</div>
+      <div class="grid2" id="matrixDist"></div>
+      <div class="section-title">重复组（高危）</div>
+      <div id="matrixDups"></div>
+      <div class="section-title">风险环境</div>
+      <div id="matrixRisks"></div>
+    </section>
+
+    <!-- 审计日志 -->
+    <section class="tab-panel" id="tab-logs">
+      <div class="page-head">
+        <h2>审计日志</h2>
+        <div class="sub">所有变更操作与认证事件记录在案（保留最近 5000 条）</div>
+      </div>
+
+      <div class="toolbar">
+        <input id="logFilter" placeholder="按动作过滤（如 profile / browser / task）" style="width:280px">
+        <button class="btn" id="btnRefreshLogs">刷新</button>
+      </div>
+
+      <table class="list">
+        <thead><tr>
+          <th>时间 (UTC)</th><th>动作</th><th>对象</th><th>详情</th><th>结果</th>
+        </tr></thead>
+        <tbody id="logRows"><tr><td colspan="5" class="empty">加载中…</td></tr></tbody>
+      </table>
+      <div class="toolbar" style="margin-top:14px">
+        <button class="btn" id="btnMoreLogs">加载更多</button>
+      </div>
+    </section>
+
+    <!-- 系统设置 -->
+    <section class="tab-panel" id="tab-settings">
+      <div class="page-head">
+        <h2>系统设置</h2>
+        <div class="sub">团队成员 / 认证 / 环境同步 / 备份恢复 / 内核指引</div>
+      </div>
+
+      <div class="settings-section" id="membersSection">
+        <h3>团队成员</h3>
+        <p class="muted" style="margin-bottom:12px">
+          成员拥有独立 API Key；operator 只能看到和操作自己创建的环境，admin 可管理全部。密钥仅在创建时显示一次。
+        </p>
+        <table class="list" style="margin-bottom:14px">
+          <thead><tr><th>成员</th><th>角色</th><th>密钥</th><th>状态</th><th style="width:170px">操作</th></tr></thead>
+          <tbody id="memberRows"></tbody>
+        </table>
+        <div class="toolbar">
+          <input id="memberName" placeholder="成员名称" style="width:160px">
+          <select id="memberRole" style="width:170px">
+            <option value="operator">operator（操作员）</option>
+            <option value="admin">admin（管理员）</option>
+          </select>
+          <button class="btn primary" id="btnAddMember">＋ 添加成员</button>
+          <span class="muted mono" id="newMemberKey"></span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>API Key 认证</h3>
+        <p class="muted" style="margin-bottom:12px">
+          开启后，所有 /api/* 请求必须携带 <code>X-API-Key</code> 请求头（按成员密钥识别身份）。
+        </p>
+        <div class="kv">
+          <div class="item"><div class="k">当前状态</div><div class="v" id="keyState">-</div></div>
+          <div class="item"><div class="k">管理员密钥（掩码）</div><div class="v mono" id="keyMasked">-</div></div>
+        </div>
+        <div class="toolbar" style="margin-top:10px">
+          <button class="btn primary" id="btnToggleKey">开启认证</button>
+          <button class="btn" id="btnRegenKey">重新生成管理员密钥</button>
+          <button class="btn" id="btnPairCode">🔗 生成插件配对码</button>
+          <span class="muted mono" id="fullKeyHint"></span>
+        </div>
+        <p class="muted" style="margin-top:8px">插件配对码 5 分钟内有效、一次性：在浏览器插件的「一键配置」中输入即可自动完成连接（认证关闭时同样可用）。</p>
+      </div>
+
+      <div class="settings-section">
+        <h3>环境同步（自托管）</h3>
+        <p class="muted" style="margin-bottom:12px">
+          本机作为<b>同步服务器</b>：开启后其它节点可用令牌向本机推送/拉取环境配置（含指纹，不含 Cookie）。<br>
+          本机作为<b>客户端</b>：配置远端地址与令牌后可推送/拉取。合并策略 LWW，删除自动传播。
+        </p>
+        <div class="toolbar">
+          <button class="btn primary" id="btnToggleSyncServer">开启同步服务器</button>
+          <button class="btn" id="btnRegenSyncToken">重新生成同步令牌</button>
+          <span class="muted mono" id="syncTokenHint"></span>
+        </div>
+        <div class="grid3" style="margin-top:12px">
+          <label>远端服务器地址<input id="syncRemoteUrl" placeholder="http://192.168.1.10:18080"></label>
+          <label>远端同步令牌<input id="syncRemoteToken" type="password" autocomplete="new-password"></label>
+          <label><button class="btn" id="btnSaveSyncRemote" style="width:100%">保存远端配置</button></label>
+        </div>
+        <div class="toolbar">
+          <button class="btn primary" id="btnSyncPush">⬆ 推送到远端</button>
+          <button class="btn primary" id="btnSyncPull">⬇ 从远端拉取</button>
+          <span class="muted" id="syncResult"></span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>备份与恢复</h3>
+        <p class="muted" style="margin-bottom:12px">
+          备份包含全部环境的配置与指纹（不含 Cookie 等数据目录与密钥状态）。恢复会<b style="color:var(--danger)">清空并重建</b>现有环境。
+        </p>
+        <div class="toolbar">
+          <button class="btn primary" id="btnBackup">⬇ 下载整机备份</button>
+          <input type="file" id="restoreFile" accept=".json" style="max-width:260px">
+          <button class="btn danger" id="btnRestore">从备份恢复</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <h3>内核与指纹安装指引</h3>
+        <div id="kernelGuide" class="muted"></div>
+      </div>
+
+      <div class="settings-section">
+        <h3>关于</h3>
+        <div class="kv" id="aboutBox"></div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ============================ 模态框 ============================ -->
+
+<!-- 新建/编辑环境 -->
+<div class="modal-backdrop hidden" id="profileModal">
+  <div class="modal">
+    <h2 id="profileModalTitle">新建环境</h2>
+    <form id="profileForm">
+      <div class="grid2">
+        <label>环境名称 <input name="name" required maxlength="64" placeholder="例如：店铺A-主账号"></label>
+        <label>分组 <input name="group_name" value="默认分组" maxlength="64"></label>
+        <label>内核
+          <select name="kernel" id="kernelSelect">
+            <option value="camoufox">camoufox（推荐，Firefox 定制，指纹伪装）</option>
+            <option value="fp-chromium">fp-chromium（Chromium 定制，伪装+CDP）</option>
+            <option value="chromium">chromium（系统浏览器，无伪装，调试用）</option>
+          </select>
+        </label>
+        <label>目标 OS（决定指纹的操作系统特征）
+          <select name="target_os">
+            <option value="windows">Windows</option>
+            <option value="macos">macOS</option>
+            <option value="linux">Linux</option>
+          </select>
+        </label>
+        <label>指纹模式
+          <select name="fingerprint_mode" id="fpModeSelect">
+            <option value="generate">合成生成（BrowserForge，无限独特组合）</option>
+            <option value="preset">真实预设（真实设备指纹库）</option>
+          </select>
+        </label>
+        <label id="batchCountWrap" style="display:none">批量数量
+          <input name="batch_count" type="number" min="1" max="200" value="5">
+        </label>
+      </div>
+
+      <fieldset>
+        <legend>代理（可选；批量模式可后续单独配置）</legend>
+        <div class="grid4">
+          <label>协议
+            <select name="proxy_scheme">
+              <option>http</option><option>https</option><option>socks5</option><option>socks4</option>
+            </select>
+          </label>
+          <label>地址 <input name="proxy_host" placeholder="127.0.0.1"></label>
+          <label>端口 <input name="proxy_port" type="number" min="1" max="65535" placeholder="8080"></label>
+          <label><button type="button" class="btn small" id="btnTestProxyInForm">测试</button></label>
+        </div>
+        <div class="grid2">
+          <label>用户名 <input name="proxy_username" autocomplete="off"></label>
+          <label>密码 <input name="proxy_password" type="password" autocomplete="new-password"></label>
+        </div>
+        <div class="proxy-result muted" id="proxyResult"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>启动选项</legend>
+        <div class="grid3">
+          <label>风控环境预设
+            <select name="preset">
+              <option value="standard">通用（默认）</option>
+              <option value="cloudflare">Cloudflare 强化（Turnstile 可交互+轨迹增强）</option>
+              <option value="china">国内风控（极验/易盾：zh-CN+上海时区）</option>
+            </select>
+          </label>
+          <label>显式时区（如 Asia/Shanghai）<input name="timezone" placeholder="留空由 geoip/系统决定"></label>
+          <label>语言 locale（如 zh-CN）<input name="locale" placeholder="留空自动"></label>
+          <label class="checkbox"><input type="checkbox" name="headless"> 无头模式</label>
+          <label class="checkbox"><input type="checkbox" name="geoip" checked> 按代理 IP 自动对齐时区/语言/经纬度</label>
+          <label class="checkbox"><input type="checkbox" name="humanize" checked> 类人鼠标轨迹</label>
+          <label class="checkbox"><input type="checkbox" name="block_webrtc"> 彻底禁用 WebRTC</label>
+            <label class="checkbox"><input type="checkbox" name="disable_coop"> 禁用 COOP（Turnstile 勾选框交互）</label>
+            <label class="checkbox"><input type="checkbox" name="disable_adblock"> 禁用广告拦截（防 Turnstile 误伤）</label>
+            <label>起始页 <input name="start_url" value="about:blank"></label>
+        </div>
+      </fieldset>
+
+      <label>备注 <textarea name="notes" rows="2"></textarea></label>
+      <label class="checkbox" id="regenRow" style="display:none">
+        <input type="checkbox" name="regen_fingerprint"> 重新生成指纹（换一套新身份，旧 Cookie 保留）
+      </label>
+
+      <div class="modal-actions">
+        <button type="button" class="btn" data-close>取消</button>
+        <button type="submit" class="btn primary" id="profileSubmit">保存</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- 指纹详情 -->
+<div class="modal-backdrop hidden" id="fpModal">
+  <div class="modal wide">
+    <h2>指纹详情</h2>
+    <pre id="fpDetail" class="json"></pre>
+    <div class="modal-actions"><button class="btn" data-close>关闭</button></div>
+  </div>
+</div>
+
+<!-- 自检链接 -->
+<div class="modal-backdrop hidden" id="detectModal">
+  <div class="modal">
+    <h2>环境自检链接</h2>
+    <p class="muted" style="margin-bottom:12px">启动环境后在浏览器里逐个打开，检查指纹一致性与 IP 泄露：</p>
+    <div id="detectLinks" class="detect-links"></div>
+    <div class="modal-actions"><button class="btn" data-close>关闭</button></div>
+  </div>
+</div>
+
+<!-- 导入环境 -->
+<div class="modal-backdrop hidden" id="importModal">
+  <div class="modal">
+    <h2>导入环境</h2>
+    <p class="muted" style="margin-bottom:12px">选择导出的环境 JSON 文件（含数据目录归档时将一并恢复 Cookie 等数据）。</p>
+    <input type="file" id="importFile" accept=".json">
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn primary" id="btnDoImport">导入</button>
+    </div>
+  </div>
+</div>
+
+<!-- 任务编辑 -->
+<div class="modal-backdrop hidden" id="taskModal">
+  <div class="modal wide">
+    <h2 id="taskModalTitle">新建任务</h2>
+    <div class="grid2">
+      <label>任务名称 <input id="taskName" maxlength="64" placeholder="例如：每日签到打卡"></label>
+      <label>备注 <input id="taskNotes" maxlength="2000"></label>
+    </div>
+    <label style="margin-bottom:14px">Webhook 回调（可选，任务运行结束时 POST 运行结果 JSON）
+      <input id="taskWebhook" placeholder="https://your-hook.example.com/task-done">
+    </label>
+    <h3>步骤（按顺序执行，任一步骤失败则终止）</h3>
+    <div id="stepEditor"></div>
+    <button type="button" class="btn small" id="btnAddStep">＋ 添加步骤</button>
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn primary" id="taskSave">保存任务</button>
+    </div>
+  </div>
+</div>
+
+<!-- 运行任务 -->
+<div class="modal-backdrop hidden" id="runModal">
+  <div class="modal">
+    <h2 id="runModalTitle">运行任务</h2>
+    <p class="muted" style="margin-bottom:12px">选择要执行任务的环境（未运行的环境会以无头模式自动拉起）：</p>
+    <div id="runProfileList" class="card" style="max-height:300px;overflow:auto;margin-bottom:14px;padding:12px 16px"></div>
+    <div class="grid2">
+      <label class="checkbox"><input type="checkbox" id="runAutoClose" checked> 结束后自动关闭自动拉起的环境</label>
+      <label class="checkbox"><input type="checkbox" id="runVisible"> 有头模式运行（肉眼可见浏览器窗口）</label>
+      <label class="checkbox" style="grid-column:1/-1"><input type="checkbox" id="runHumanize"> 人机化节奏（步骤间随机停顿 + 逐字输入，降低行为特征检测）</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn primary" id="btnDoRun">开始运行</button>
+    </div>
+  </div>
+</div>
+
+<!-- 运行详情 -->
+<div class="modal-backdrop hidden" id="runDetailModal">
+  <div class="modal wide">
+    <h2>运行详情 <span class="muted mono" id="runDetailId" style="font-size:12px"></span></h2>
+    <div id="runDetailBody"></div>
+    <div class="modal-actions">
+      <button class="btn" id="btnRefreshRun">刷新</button>
+      <button class="btn" data-close>关闭</button>
+    </div>
+  </div>
+</div>
+
+<!-- 环境就绪度体检报告 -->
+<div class="modal-backdrop hidden" id="readinessModal">
+  <div class="modal wide">
+    <h2>环境就绪度体检 <span class="muted" id="readinessTitle" style="font-size:12px"></span></h2>
+    <div id="readinessBody"><p class="muted">检测中（约 10~40 秒）：实测网络出口、时区、语言、WebRTC、自动化标记与指纹稳定性…</p></div>
+    <div class="modal-actions"><button class="btn" data-close>关闭</button></div>
+  </div>
+</div>
+
+<!-- 调度编辑 -->
+<div class="modal-backdrop hidden" id="scheduleModal">
+  <div class="modal">
+    <h2 id="scheduleModalTitle">新建调度</h2>
+    <div class="grid2">
+      <label>调度名称 <input id="scheduleName" maxlength="64" placeholder="例如：每日9点签到"></label>
+      <label>执行任务
+        <select id="scheduleTask"></select>
+      </label>
+      <label>调度类型
+        <select id="scheduleKind">
+          <option value="daily">每日固定时刻</option>
+          <option value="interval">固定间隔（分钟）</option>
+        </select>
+      </label>
+      <label id="scheduleDailyWrap">每日时刻（HH:MM）
+        <input id="scheduleDailyTime" placeholder="01:30">
+      </label>
+      <label id="scheduleIntervalWrap" style="display:none">间隔分钟数
+        <input id="scheduleInterval" type="number" min="1" value="60">
+      </label>
+      <label id="scheduleTimezoneWrap">时区（IANA 名，留空=系统本地）
+        <input id="scheduleTimezone" placeholder="如 Asia/Shanghai">
+      </label>
+    </div>
+    <div id="scheduleWeekdayWrap">
+      <h3 style="margin-bottom:6px">生效日（不选=每天）</h3>
+      <div class="step-params" id="scheduleWeekdays" style="gap:6px 18px">
+        <label class="checkbox"><input type="checkbox" value="0">周一</label>
+        <label class="checkbox"><input type="checkbox" value="1">周二</label>
+        <label class="checkbox"><input type="checkbox" value="2">周三</label>
+        <label class="checkbox"><input type="checkbox" value="3">周四</label>
+        <label class="checkbox"><input type="checkbox" value="4">周五</label>
+        <label class="checkbox"><input type="checkbox" value="5">周六</label>
+        <label class="checkbox"><input type="checkbox" value="6">周日</label>
+      </div>
+    </div>
+    <h3>执行环境</h3>
+    <div id="scheduleProfileList" class="card" style="max-height:200px;overflow:auto;margin-bottom:14px;padding:12px 16px"></div>
+    <div class="grid2">
+      <label class="checkbox"><input type="checkbox" id="scheduleHeadless" checked> 无头模式运行</label>
+      <label class="checkbox"><input type="checkbox" id="scheduleAutoClose" checked> 结束后自动关闭</label>
+    </div>
+    <div class="modal-actions">
+      <button class="btn" data-close>取消</button>
+      <button class="btn primary" id="scheduleSave">保存调度</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+<script src="app.js"></script>
+</body>
+</html>
