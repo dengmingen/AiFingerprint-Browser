@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>指纹浏览器工作台</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header>
+    <div class="logo">◈</div>
+    <div class="brand">
+      <b>指纹浏览器工作台</b>
+      <span id="connState" class="muted">未连接</span>
+    </div>
+    <button id="btnOptions" class="icon-btn" title="设置">⚙</button>
+  </header>
+
+  <!-- ============ 一键配置 ============ -->
+  <section id="setup">
+    <div class="card">
+      <h3>一键连接</h3>
+      <label>工作台地址
+        <input id="serverUrl" value="http://127.0.0.1:18080" placeholder="http://127.0.0.1:18080">
+      </label>
+      <button id="btnQuickConnect" class="primary">⚡ 一键连接</button>
+      <div class="hint">未开启 API Key 认证时点击即可完成配置</div>
+    </div>
+    <div class="divider">或</div>
+    <div class="card">
+      <h3>配对码连接</h3>
+      <p class="hint">工作台 → 系统设置 → 「生成插件配对码」，5 分钟内有效</p>
+      <input id="pairCode" placeholder="6 位配对码" maxlength="6" style="text-transform:uppercase;letter-spacing:4px;text-align:center">
+      <button id="btnPair" class="primary">🔗 配对并连接</button>
+    </div>
+    <details>
+      <summary>高级：手动填写 API Key</summary>
+      <input id="apiKey" placeholder="X-API-Key（认证开启时）">
+      <button id="btnSaveKey" class="ghost">保存并测试</button>
+    </details>
+    <div id="setupMsg" class="msg"></div>
+  </section>
+
+  <!-- ============ 主面板 ============ -->
+  <section id="main" hidden>
+    <div class="card status-card">
+      <div id="kernelBadges" class="badges"></div>
+      <div class="row muted">
+        <span id="runningCount">0 运行中</span>·<span id="identity"></span>·<span id="version"></span>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>在环境中打开当前页</h3>
+      <div class="muted ellipsis" id="currentUrl">（读取当前标签页…）</div>
+      <div class="row">
+        <select id="envSelect" style="flex:1"></select>
+        <button id="btnOpenHere" class="primary">打开</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row card-head">
+        <h3 style="margin:0">环境</h3>
+        <button id="btnRefresh" class="ghost small">刷新</button>
+      </div>
+      <div id="envList"></div>
+    </div>
+
+    <div class="card">
+      <h3>自检</h3>
+      <div class="links">
+        <a href="https://abrahamjuliot.github.io/creepjs/" target="_blank">CreepJS</a>
+        <a href="https://browserleaks.com/javascript" target="_blank">BrowserLeaks</a>
+        <a href="https://pixelscan.net/" target="_blank">Pixelscan</a>
+        <a href="http://127.0.0.1:18080/" target="_blank">打开工作台</a>
+      </div>
+    </div>
+
+    <footer>
+      <span class="muted" id="lastSync"></span>
+      <button id="btnDisconnect" class="ghost small">断开连接</button>
+    </footer>
+  </section>
+
+  <div id="toast" class="toast" hidden></div>
+  <script src="popup.js"></script>
+</body>
+</html>
